@@ -45,7 +45,7 @@ spec:
 # requests is the minimum amount of compute resources used by the pod
             requests:
 # cpu is the minimum amount of cpu the pod needs to run
-              cpu: ".125"
+              cpu: ".1"
 # memory is the minimum amount of memory the pod needs to run
               memory: "250Mi"
 #  livenessprobe is a configuration that checks the pod for health
