@@ -1,95 +1,116 @@
-# this is the version of YAML we are using with the Kubernetes API
+# joseph 2022
+# This is the version of YAML we are using with the Kubernetes API
 apiVersion: apps/v1
-# this kind is the type of Kubernetes resource we are using
-# a deployment is when we run code on a server
+# The kind is the type of kubernetes resource we are using
+# A deployment is when we run code on a server
 kind: Deployment
-# metadata is information related to the object we created in Kubernetes
+# Metadata is information related to the object we created in Kubernetes
 metadata:
-# the name here is the name of our deployment
+# The name here is the name of our deployment
   name: stedi-joseph
 spec:
-# replicas refers to the number of pods we deploy
+# Replicas refers to the number of pods we deploy
   replicas: 1
-# a selector is a route to my pod
+# A selector is a route to my pod
   selector:
-# match labels are a label for my selector
+# Matchlabels are a label for my selector
     matchLabels:
-# app is a specific kind of label for my pod
+# App is a specific kind of label for my pod
       app: stedi-joseph
-# the template describes all the features of my pod
+# The Template describes all the features of my pod
   template:
-# metadata provides labels for my template
+# Metadata provides labels for my template
     metadata:
       labels:
         app: stedi-joseph
-# the spec refers to the specification of my containers in my pod
+# The spec refers to the specification of my containers in my pod
     spec:
-# containers can have one or more Docker containers in the pod
+# Containers can have one or more docker containers in the pod
       containers:
-# the name of the container is specified below
+# The name of the container is specified below
         - name: stedi-joseph
-# the image is a prebuilt file containing the operating system
-          image: gcr.io/team-fire262/stedi-joseph
-# the ports is a list of tcp ports the pod listens to:
+# The image is a prebuilt file containing the operating system
+          image: gcr.io/group-project-cloud-account/stedi-joseph
+# The ports is a list of tcp ports the pod listens on
           ports:
-# the container port is a specific port the listens on:
-          - containerPort: 4567
-# resources are the compute resources used by the pod in the cloud
+# The container port is a specific port the pod listens on
+           - containerPort: 4567
+# Resources are the compute resources used by the pod in the cloud
           resources:
-# limits represent the max amount of cpu and memory that can be used by the pod
+# Limits represent the max amount of cpu and memory allowed for the pod
             limits:
-# cpu is the max amount of cpu that can be used by the pod
+# CPU is the max amount of CPU that can be used by the pod
               cpu: ".125"
-# memory is the max amount of memory that can be used by the pod
+# Memory is the max amount of memory that can be used by the pod
               memory: "500Mi"
-# requests is the minimum amount of compute resources used by the pod
+# Requests is the minimum amount of compute resources used by the pod
             requests:
-# cpu is the minimum amount of cpu the pod needs to run
+# CPU is the minimum amount of CPU the pod needs to run
               cpu: ".1"
-# memory is the minimum amount of memory the pod needs to run
+# Memory is the minimum amount of memory the pod needs to run
               memory: "250Mi"
-#  livenessprobe is a configuration that checks the pod for health
+# LivenessProbe is a configuration that checks the pod for health
           livenessProbe:
-# httpget instructs kubernetes to do an http request to check health
+# HttpGet instructs kubernetes to do an HTTP request to check health
             httpGet:
-# path defines the url to use when doing the http request
+# Path defines the url to use when doing the HTTP request
               path: /
-# port defines the port to use when doing the http request
+# Port defines the port to use when doing the HTTP request
               port: 4567
-# initialdelayseconds tells kubernetes to wait before doing a request
+# initialDelaySeconds tells Kubernetes to wait before doing a request
             initialDelaySeconds: 10
 # periodSeconds tells Kubernetes how often to check health
             periodSeconds: 3
+            
+# #  apiVersion tells Kubernetes which version of yaml to use
+# apiVersion: v1
+# #  kind tell kubernetes what kind of object to create
+# kind: Service
+# # metadata contain atrubuttes abuout the objct
+# metadata:
+# #  name is the name of the object we are creating
+#   name: stedi-joseph-loadbalancer
+# #  spec is the spef=cification for the object (or the loadbalancer)
+# spec: 
+#   #selector tells the network layer how to find the right pod
+#   selector: 
+# #  app teel the selector wich app to send the network traffic to
+#     app: stedi-joseph
+# #  tell kubernetes the type of service I want
+# # a load balancer destributes network packets to on or more pods
+#   type: LoadBalancer
+# #  ports are list of ports the load ballancer listens on
+#   ports:
+# #  port is the port we want to listen in the network
+#     - port: 80
+# # target port is the port the pod listens on insed of kubernetes
+#       targetPort: 4567
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stedi-ingress-joseph
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: stedi-public-joseph
+    networking.gke.io/managed-certificates: stedi-certificate-joseph
+    kubernetes.io/ingress.allow-http: "false"
+    #  the below line was not there before
+    kubernetes.io/ingress.class: "gce"
+spec:
+  defaultBackend:
+    service:
+      name: stedi-nodeport-joseph
+      port:
+        number: 80
 
 ---
-  apiVersion: networking.k8s.io/v1
-  kind:
-  metadata: 
-    name: stedi-ingress-joseph
-    annotations:
-      kubernetes.io/ingress.global-static-ip-name: stedi-public-joseph
-      networking.gke.io/managed-certificates: stedi-certificate-joseph
-      kubernetes.io/ingress.allow-http: "false"
-      # the below line wasn't there before
-      kubernetes.io/ingress.class: "gce"
-  spec:
-    defaultBackend:   
-      service:
-        name: stedi-nodeport-joseph
-        port:
-          number: 80
----
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: stedi-nodeport-joseph
-  spec:
-    selector:
-      app: stedi
-    type: NodePort
-    ports:
-      - port: 80
-        targetPort: 4567
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: stedi-certificate-joseph
+spec:
+  domains:
+    - josephstedi.cit262.com
 ---
 apiVersion: v1
 kind: Service
@@ -97,16 +118,9 @@ metadata:
   name: stedi-nodeport-joseph
 spec:
   selector:
-    app: stedi
+    app: stedi-joseph
   type: NodePort
   ports:
-    - port: 80
+    - protocol: TCP
+      port: 80
       targetPort: 4567
----
-  apiVersion: networking.gke.io/v1
-  kind: ManagedCertificate
-  metadata:
-    name: stedi-certificate
-  spec:
-    domains:
-      - josephstedi.cit262.com
