@@ -30,7 +30,7 @@ spec:
 # The name of the container is specified below
         - name: stedi-joseph
 # The image is a prebuilt file containing the operating system
-          image: gcr.io/group-project-cloud-account/stedi-joseph
+          image: gcr.io/team-fire262/stedi-joseph
 # The ports is a list of tcp ports the pod listens on
           ports:
 # The container port is a specific port the pod listens on
