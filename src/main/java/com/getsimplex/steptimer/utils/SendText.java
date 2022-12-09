@@ -10,8 +10,8 @@ import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.type.PhoneNumber;
 
 public class SendText {
-    private static String ACCOUNT_SID ="";
-    private static String AUTH_TOKEN = "";
+    private static String ACCOUNT_SID= "";
+    private static String AUTH_TOKEN= "";
     private static String TWILIO_PHONE= "";
 
 

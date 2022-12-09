@@ -1,5 +1,6 @@
-# joseph 2022
+# Joseph Ogunniyi 2022
 # This is the version of YAML we are using with the Kubernetes API
+
 apiVersion: apps/v1
 # The kind is the type of kubernetes resource we are using
 # A deployment is when we run code on a server
@@ -7,7 +8,7 @@ kind: Deployment
 # Metadata is information related to the object we created in Kubernetes
 metadata:
 # The name here is the name of our deployment
-  name: stedi-joseph
+  name: stedi-joseph-test
 spec:
 # Replicas refers to the number of pods we deploy
   replicas: 1
@@ -15,14 +16,14 @@ spec:
   selector:
 # Matchlabels are a label for my selector
     matchLabels:
-# App is a specific kind of label for my pod
-      app: stedi-joseph
+# App is a specific kind of label for my podkub
+      app: stedi-joseph-test
 # The Template describes all the features of my pod
   template:
 # Metadata provides labels for my template
     metadata:
       labels:
-        app: stedi-joseph
+        app: stedi-joseph-test
 # The spec refers to the specification of my containers in my pod
     spec:
 # Containers can have one or more docker containers in the pod
@@ -30,6 +31,7 @@ spec:
 # The name of the container is specified below
         - name: stedi-joseph
 # The image is a prebuilt file containing the operating system
+# If no web domain is specified, builder will assume it goes to dockerhub.
           image: gcr.io/team-fire262/stedi-joseph
           env:
             - name: REDIS_PASSWORD
@@ -38,7 +40,7 @@ spec:
                   name: redis-secrets-dev-joseph
                   key: REDIS_PASS
             - name: REDIS_HOST
-              value: "redis-stedi-dev-joseph"
+              value: "redis-stedi-test"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_DB
@@ -46,7 +48,7 @@ spec:
 # The ports is a list of tcp ports the pod listens on
           ports:
 # The container port is a specific port the pod listens on
-           - containerPort: 4567
+           - containerPort: 80
 # Resources are the compute resources used by the pod in the cloud
           resources:
 # Limits represent the max amount of cpu and memory allowed for the pod
@@ -58,7 +60,7 @@ spec:
 # Requests is the minimum amount of compute resources used by the pod
             requests:
 # CPU is the minimum amount of CPU the pod needs to run
-              cpu: ".1"
+              cpu: ".125"
 # Memory is the minimum amount of memory the pod needs to run
               memory: "250Mi"
 # LivenessProbe is a configuration that checks the pod for health
@@ -70,81 +72,58 @@ spec:
 # Port defines the port to use when doing the HTTP request
               port: 4567
 # initialDelaySeconds tells Kubernetes to wait before doing a request
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
 # periodSeconds tells Kubernetes how often to check health
             periodSeconds: 3
-            
-# #  apiVersion tells Kubernetes which version of yaml to use
-# apiVersion: v1
-# #  kind tell kubernetes what kind of object to create
-# kind: Service
-# # metadata contain atrubuttes abuout the objct
-# metadata:
-# #  name is the name of the object we are creating
-#   name: stedi-joseph-loadbalancer
-# #  spec is the spef=cification for the object (or the loadbalancer)
-# spec: 
-#   #selector tells the network layer how to find the right pod
-#   selector: 
-# #  app teel the selector wich app to send the network traffic to
-#     app: stedi-joseph
-# #  tell kubernetes the type of service I want
-# # a load balancer destributes network packets to on or more pods
-#   type: LoadBalancer
-# #  ports are list of ports the load ballancer listens on
-#   ports:
-# #  port is the port we want to listen in the network
-#     - port: 80
-# # target port is the port the pod listens on insed of kubernetes
-#       targetPort: 4567
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: stedi-ingress-joseph
-  annotations:
-    kubernetes.io/ingress.global-static-ip-name: stedi-public-joseph
-    networking.gke.io/managed-certificates: stedi-certificate-joseph
-    kubernetes.io/ingress.allow-http: "false"
-    #  the below line was not there before
-    kubernetes.io/ingress.class: "gce"
-spec:
-  rules:
-    - http:
-        paths:
-        - path: /dev
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: stedi-nodeport
-              port:
-                number: 80
-      #  - path: /discounted
-      #    pathType: ImplementationSpecific
-      #    backend:
-      #     service:
-      #        name: my-discounted-products
-      #        port:
-      #          number: 80
-
----
+# apiVersion tells Kubernetes which version of ymdiraml to use
 apiVersion: networking.gke.io/v1
+# kind tells what kind of object to create
 kind: ManagedCertificate
+# metadata is the metadata
 metadata:
-  name: stedi-certificate-joseph
-spec:
-  domains:
-    - josephstedi.cit262.com
+  name: stedi-joseph-certificate2
+spec: 
+    # 'selector' tells network layer how to find the right pod
+    domains:
+      - josephstedi.cit262.com
 ---
+# apiVersion tells Kubernetes which version of ymdiraml to use
 apiVersion: v1
+# kind tells what kind of object to create
 kind: Service
+# metadata is the metadata
 metadata:
-  name: stedi-nodeport-joseph
-spec:
-  selector:
-    app: stedi-joseph
-  type: NodePort
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 4567
+  name: stedi-joseph-nodeport
+spec: 
+    # 'selector' tells network layer how to find the right pod
+    selector:
+      app: stedi-joseph-test
+    type: NodePort # distrubutes network packets to one or more pods
+    ports:
+      - port: 80
+        targetPort: 4567 # port that pod listens to inside of Kubernetes
+---
+# apiVersion tells Kubernetes which version of ymdiraml to use
+apiVersion: networking.k8s.io/v1
+# kind tells what kind of object to create
+kind: Ingress
+# metadata is the metadata
+metadata:
+  name: stedi-joseph-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: stedi-joseph
+    networking.gke.io/managed-certificates: stedi-joseph-certificate2
+    # kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: "gce"
+# New spec for final three-build layout
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - path: /dev
+#         pathType: ImplementationSpecific
+#         backend:
+#           service:
+#             name: stedi-joseph-nodeport
+#             port:
