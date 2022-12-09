@@ -1,13 +1,12 @@
 steps:
 
-
   # This step stops the stedi pod
   - name: 'gcr.io/cloud-builders/kubectl'
     id: Stop Pod
     args:
       - 'scale'
       - 'deploy'
-      - 'stedi-joseph'
+      - 'stedi-joseph-test'
       - '--replicas=0'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
