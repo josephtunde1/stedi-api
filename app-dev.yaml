@@ -75,6 +75,7 @@ spec:
 # periodSeconds tells Kubernetes how often to check health
             periodSeconds: 3
 ---
+
 # apiVersion tells Kubernetes which version of ymdiraml to use
 apiVersion: networking.gke.io/v1
 # kind tells what kind of object to create
@@ -111,11 +112,12 @@ kind: Ingress
 # metadata is the metadata
 metadata:
   name: stedi-joseph-ingress
-annotations:
+  annotations:
     kubernetes.io/ingress.global-static-ip-name: stedi-joseph
     networking.gke.io/managed-certificates: stedi-joseph-certificate2
     # kubernetes.io/ingress.allow-http: "false"
     kubernetes.io/ingress.class: "gce"
+---
 # New spec for final three-build layout
 # spec:
 #   rules:
@@ -126,4 +128,4 @@ annotations:
 #         backend:
 #           service:
 #             name: stedi-joseph-nodeport
-#             port:
+#             port: 
